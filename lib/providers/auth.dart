@@ -35,9 +35,8 @@ class Auth with ChangeNotifier {
     return _uid;
   }
 
-  Future<void> _authenticate(
-      String email, String password, Map<String, String> body) async {
-    final url = 'http://10.0.2.2:3001/api/auth';
+  Future<void> _authenticate(String prefix, Map<String, String> body) async {
+    final url = 'http://10.0.2.2:3001/api/auth$prefix';
     try {
       final response = await http.post(
         url,
@@ -78,9 +77,7 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> signup(String email, String password) async {
-    return _authenticate(
-      email,
-      password,
+    return _authenticate('/',
       {
         'name': 'masahiro',
         'email': email,
@@ -91,7 +88,7 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> login(String email, String password) async {
-    return _authenticate(email, password, {
+    return _authenticate('/sign_in', {
       'email': email,
       'password': password,
     },);

@@ -43,20 +43,17 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-
-    print('sentinel1');
     var url = 'http://10.0.2.2:3001/api/events';
     var headers = await getAuthorization();
-    print('sentinel2');
+
     try {
-      print('sentinel3');
       final response = await http.get(url, headers: headers);
       final extractedData = json.decode(response.body)['response'] as List;
 
       if (extractedData == null) {
         return;
       }
-      print('sentinel4');
+
       final List<Product> loadedProducts = [];
       for (int i = 0; i < extractedData.length; i++) {
         loadedProducts.add(Product(
@@ -68,13 +65,9 @@ class Products with ChangeNotifier {
           imageUrl: 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
         ));
       }
-      print('sentinel5');
       _items = loadedProducts;
-      print('sentinel5.5');
       notifyListeners();
-      print('sentinel6');
     } catch (error) {
-      print('sentinel7');
       throw (error);
     }
   }
@@ -101,7 +94,6 @@ class Products with ChangeNotifier {
         id: json.decode(response.body)['name'],
       );
       _items.add(newProduct);
-      // _items.insert(0, newProduct); // at the start of the list
       notifyListeners();
     } catch (error) {
       print(error);
