@@ -10,7 +10,8 @@ import '../models/http_exception.dart';
 class Auth with ChangeNotifier {
   String _token;
   DateTime _expiryDate;
-  String _userId;
+  String _uid;
+  String _client;
   Timer _authTimer;
 
   bool get isAuth {
@@ -27,34 +28,34 @@ class Auth with ChangeNotifier {
   }
 
   String get userId {
-    return _userId;
+    return _uid;
   }
 
   Future<void> _authenticate(
-      String email, String password, String urlSegment) async {
-    final url =
-    'https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=AIzaSyArcJO7tl3U-yggQWXnm_A7biQ12AIU7dQ';
+      String email, String password, Map<String, String> body) async {
+    final url = 'http://10.0.2.2:3001/api/auth';
     try {
       final response = await http.post(
         url,
-        body: json.encode(
-          {
-            'email': email,
-            'password': password,
-            'returnSecureToken': true,
-          },
-        ),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(body),
       );
+
       final responseData = json.decode(response.body);
+      print('---------');
+      print(response.headers);
+      print('---------');
+
       if (responseData['error'] != null) {
         throw HttpException(responseData['error']['message']);
       }
-      _token = responseData['idToken'];
-      _userId = responseData['localId'];
+      _token = response.headers['access-token'];
+      _uid = response.headers['uid'];
+      _client = response.headers['client'];
       _expiryDate = DateTime.now().add(
         Duration(
           seconds: int.parse(
-            responseData['expiresIn'],
+            response.headers['expiry'],
           ),
         ),
       );
@@ -63,8 +64,9 @@ class Auth with ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode(
         {
-          'token': _token,
-          'userId': _userId,
+          'access-token': _token,
+          'uid': _uid,
+          'client': _client,
           'expiryDate': _expiryDate.toIso8601String(),
         },
       );
@@ -75,11 +77,23 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> signup(String email, String password) async {
-    return _authenticate(email, password, 'signUp');
+    return _authenticate(
+      email,
+      password,
+      {
+        'name': 'masahiro',
+        'email': email,
+        'password': password,
+        'password_confirmation': password,
+      },
+    );
   }
 
   Future<void> login(String email, String password) async {
-    return _authenticate(email, password, 'signInWithPassword');
+    return _authenticate(email, password, {
+      'email': email,
+      'password': password,
+    },);
   }
 
   Future<bool> tryAutoLogin() async {
@@ -87,14 +101,16 @@ class Auth with ChangeNotifier {
     if (!prefs.containsKey('userData')) {
       return false;
     }
-    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final extractedUserData =
+        json.decode(prefs.getString('userData')) as Map<String, Object>;
     final expiryDate = DateTime.parse(extractedUserData['expiryDate']);
 
     if (expiryDate.isBefore(DateTime.now())) {
       return false;
     }
-    _token = extractedUserData['token'];
-    _userId = extractedUserData['userId'];
+    _token = extractedUserData['access-token'];
+    _client = extractedUserData['client'];
+    _uid = extractedUserData['uid'];
     _expiryDate = expiryDate;
     notifyListeners();
 //    _autoLogout();
@@ -103,7 +119,8 @@ class Auth with ChangeNotifier {
 
   Future<void> logout() async {
     _token = null;
-    _userId = null;
+    _uid = null;
+    _client = null;
     _expiryDate = null;
     if (_authTimer != null) {
       _authTimer.cancel();
