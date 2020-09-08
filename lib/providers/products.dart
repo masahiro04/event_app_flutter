@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,10 +17,6 @@ class Products with ChangeNotifier {
   List<Product> get items {
     return [..._items];
   }
-
-//  List<Product> get favoriteItems {
-//    return _items.where((prodItem) => prodItem.isFavorite).toList();
-//  }
 
   Product findById(String id) {
     return _items.firstWhere((prod) => prod.id == id);
@@ -103,13 +98,14 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product newProduct) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
-      final url =
-          'https://shopapp-c1d6b.firebaseio.com/products/$id.json?auth=$authToken';
+      final headers = await getAuthorization();
+      final url = 'http://10.0.2.2:3001/api/events/$id';
       await http.patch(url,
+          headers: headers,
           body: json.encode({
             'title': newProduct.title,
-            'description': newProduct.description,
-            'imageUrl': newProduct.imageUrl,
+            'body': newProduct.description,
+            'imageUrl': 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
             'price': newProduct.price
           }));
       _items[prodIndex] = newProduct;
@@ -120,13 +116,13 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final url =
-        'https://shopapp-c1d6b.firebaseio.com/products/$id.json?auth=$authToken';
+    final headers = await getAuthorization();
+    final url ='http://10.0.2.2:3001/api/events/$id';
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     var existingProduct = _items[existingProductIndex];
     _items.removeAt(existingProductIndex);
     notifyListeners();
-    final response = await http.delete(url);
+    final response = await http.delete(url, headers: headers);
     if (response.statusCode >= 400) {
       _items.insert(existingProductIndex, existingProduct);
       notifyListeners();
