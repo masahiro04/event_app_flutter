@@ -168,8 +168,7 @@ class _EditProductState extends State<EditProductScreen> {
                             price: _editedProduct.price,
                             description: _editedProduct.description,
                             imageUrl: _editedProduct.imageUrl,
-                            id: _editedProduct.id,
-                            isFavorite: _editedProduct.isFavorite);
+                            id: _editedProduct.id,);
                       },
                     ),
                     TextFormField(
@@ -200,8 +199,7 @@ class _EditProductState extends State<EditProductScreen> {
                             price: double.parse(value),
                             description: _editedProduct.description,
                             imageUrl: _editedProduct.imageUrl,
-                            id: _editedProduct.id,
-                            isFavorite: _editedProduct.isFavorite);
+                            id: _editedProduct.id,);
                       },
                     ),
                     TextFormField(
@@ -226,8 +224,7 @@ class _EditProductState extends State<EditProductScreen> {
                             price: _editedProduct.price,
                             description: value,
                             imageUrl: _editedProduct.imageUrl,
-                            id: _editedProduct.id,
-                            isFavorite: _editedProduct.isFavorite);
+                            id: _editedProduct.id,);
                       },
                     ),
                     Row(
@@ -278,8 +275,7 @@ class _EditProductState extends State<EditProductScreen> {
                                   price: _editedProduct.price,
                                   description: _editedProduct.description,
                                   imageUrl: value,
-                                  id: _editedProduct.id,
-                                  isFavorite: _editedProduct.isFavorite);
+                                  id: _editedProduct.id,);
                             },
                           ),
                         )

@@ -19,9 +19,9 @@ class Products with ChangeNotifier {
     return [..._items];
   }
 
-  List<Product> get favoriteItems {
-    return _items.where((prodItem) => prodItem.isFavorite).toList();
-  }
+//  List<Product> get favoriteItems {
+//    return _items.where((prodItem) => prodItem.isFavorite).toList();
+//  }
 
   Product findById(String id) {
     return _items.firstWhere((prod) => prod.id == id);
@@ -61,7 +61,6 @@ class Products with ChangeNotifier {
           title: extractedData[i]['title'],
           description: extractedData[i]['body'],
           price: 10,
-          isFavorite: false,
           imageUrl: 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
         ));
       }
@@ -73,17 +72,17 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    final url =
-        'https://shopapp-c1d6b.firebaseio.com/products.json?auth=$authToken';
+    final url = 'http://10.0.2.2:3001/api/events';
     try {
+      final headers = await getAuthorization();
       final response = await http.post(
         url,
+        headers: headers,
         body: json.encode({
           'title': product.title,
-          'description': product.description,
-          'imageUrl': product.imageUrl,
-          'price': product.price,
-          'creatorId': userId,
+          'body': product.description,
+          'imageUrl': 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
+          'price': 10,
         }),
       );
       final newProduct = Product(

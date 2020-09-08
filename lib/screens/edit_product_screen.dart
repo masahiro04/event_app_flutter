@@ -171,8 +171,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             price: _editedProduct.price,
                             description: _editedProduct.description,
                             imageUrl: _editedProduct.imageUrl,
-                            id: _editedProduct.id,
-                            isFavorite: _editedProduct.isFavorite);
+                            id: _editedProduct.id,);
                       },
                     ),
                     TextFormField(
@@ -203,8 +202,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             price: double.parse(value),
                             description: _editedProduct.description,
                             imageUrl: _editedProduct.imageUrl,
-                            id: _editedProduct.id,
-                            isFavorite: _editedProduct.isFavorite);
+                            id: _editedProduct.id,);
                       },
                     ),
                     TextFormField(
@@ -229,7 +227,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           description: value,
                           imageUrl: _editedProduct.imageUrl,
                           id: _editedProduct.id,
-                          isFavorite: _editedProduct.isFavorite,
                         );
                       },
                     ),
@@ -290,7 +287,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                 description: _editedProduct.description,
                                 imageUrl: value,
                                 id: _editedProduct.id,
-                                isFavorite: _editedProduct.isFavorite,
                               );
                             },
                           ),
