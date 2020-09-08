@@ -15,8 +15,8 @@ class Product with ChangeNotifier {
     @required this.id,
     @required this.title,
     @required this.description,
-    @required this.price,
-    @required this.imageUrl,
+    this.price = 10,
+    this.imageUrl = 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
     this.isFavorite = false,
   });
 

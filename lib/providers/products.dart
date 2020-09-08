@@ -2,55 +2,20 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/http_exception.dart';
 import './product.dart';
 
 class Products with ChangeNotifier {
-  List<Product> _items = [
-    // Product(
-    //   id: 'p1',
-    //   title: 'Red Shirt',
-    //   description: 'A red shirt - it is pretty red!',
-    //   price: 29.99,
-    //   imageUrl:
-    //       'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
-    // ),
-    // Product(
-    //   id: 'p2',
-    //   title: 'Trousers',
-    //   description: 'A nice pair of trousers.',
-    //   price: 59.99,
-    //   imageUrl:
-    //       'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
-    // ),
-    // Product(
-    //   id: 'p3',
-    //   title: 'Yellow Scarf',
-    //   description: 'Warm and cozy - exactly what you need for the winter.',
-    //   price: 19.99,
-    //   imageUrl:
-    //       'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
-    // ),
-    // Product(
-    //   id: 'p4',
-    //   title: 'A Pan',
-    //   description: 'Prepare any meal you want.',
-    //   price: 49.99,
-    //   imageUrl:
-    //       'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
-    // ),
-  ];
-  // var _showFavoritesOnly = false;
+  List<Product> _items = [];
+
   final String authToken;
   final String userId;
 
   Products(this.authToken, this.userId, this._items);
 
   List<Product> get items {
-    // if (_showFavoritesOnly) {
-    //   return _items.where((prodItem) => prodItem.isFavorite).toList();
-    // }
     return [..._items];
   }
 
@@ -62,45 +27,54 @@ class Products with ChangeNotifier {
     return _items.firstWhere((prod) => prod.id == id);
   }
 
-  // void showFavoritesOnly() {
-  //   _showFavoritesOnly = true;
-  //   notifyListeners();
-  // }
+  Future<Map<String, String>> getAuthorization() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userData')) {
+      return {};
+    }
+    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
 
-  // void showAll() {
-  //   _showFavoritesOnly = false;
-  //   notifyListeners();
-  // }
+    return {
+      'Content-Type': 'application/json',
+      'access-token': extractedUserData['access-token'],
+      'client': extractedUserData['client'],
+      'uid': extractedUserData['uid']
+    };
+  }
 
-  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
-    final filterString = filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
-    var url =
-        'https://shopapp-c1d6b.firebaseio.com/products.json?auth=$authToken&$filterString';
+  Future<void> fetchAndSetProducts() async {
+
+    print('sentinel1');
+    var url = 'http://10.0.2.2:3001/api/events';
+    var headers = await getAuthorization();
+    print('sentinel2');
     try {
-      final response = await http.get(url);
-      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      print('sentinel3');
+      final response = await http.get(url, headers: headers);
+      final extractedData = json.decode(response.body)['response'] as List;
+
       if (extractedData == null) {
         return;
       }
-      url =
-          'https://shopapp-c1d6b.firebaseio.com/userFavorites/$userId.json?auth=$authToken';
-      final favoriteResponse = await http.get(url);
-      final favoriteData = json.decode(favoriteResponse.body);
+      print('sentinel4');
       final List<Product> loadedProducts = [];
-      extractedData.forEach((prodId, prodData) {
+      for (int i = 0; i < extractedData.length; i++) {
         loadedProducts.add(Product(
-          id: prodId,
-          title: prodData['title'],
-          description: prodData['description'],
-          price: prodData['price'],
-          isFavorite:
-              favoriteData == null ? false : favoriteData[prodId] ?? false,
-          imageUrl: prodData['imageUrl'],
+          id: extractedData[i]['id'].toString(),
+          title: extractedData[i]['title'],
+          description: extractedData[i]['body'],
+          price: 10,
+          isFavorite: false,
+          imageUrl: 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
         ));
-      });
+      }
+      print('sentinel5');
       _items = loadedProducts;
+      print('sentinel5.5');
       notifyListeners();
+      print('sentinel6');
     } catch (error) {
+      print('sentinel7');
       throw (error);
     }
   }

@@ -19,9 +19,13 @@ class Auth with ChangeNotifier {
   }
 
   String get token {
-    if (_expiryDate != null &&
-        _expiryDate.isAfter(DateTime.now()) &&
-        _token != null) {
+//    if (_expiryDate != null &&
+//        _expiryDate.isAfter(DateTime.now()) &&
+//        _token != null) {
+//      return _token;
+//    }
+//    return null;
+    if (_token != null) {
       return _token;
     }
     return null;
@@ -42,9 +46,6 @@ class Auth with ChangeNotifier {
       );
 
       final responseData = json.decode(response.body);
-      print('---------');
-      print(response.headers);
-      print('---------');
 
       if (responseData['error'] != null) {
         throw HttpException(responseData['error']['message']);
@@ -52,13 +53,13 @@ class Auth with ChangeNotifier {
       _token = response.headers['access-token'];
       _uid = response.headers['uid'];
       _client = response.headers['client'];
-      _expiryDate = DateTime.now().add(
-        Duration(
-          seconds: int.parse(
-            response.headers['expiry'],
-          ),
-        ),
-      );
+//      _expiryDate = DateTime.now().add(
+//        Duration(
+//          seconds: int.parse(
+//            response.headers['expiry'],
+//          ),
+//        ),
+//      );
 //      _autoLogout();
       notifyListeners();
       final prefs = await SharedPreferences.getInstance();
@@ -67,7 +68,7 @@ class Auth with ChangeNotifier {
           'access-token': _token,
           'uid': _uid,
           'client': _client,
-          'expiryDate': _expiryDate.toIso8601String(),
+//          'expiryDate': _expiryDate.toIso8601String(),
         },
       );
       prefs.setString('userData', userData);
@@ -103,15 +104,15 @@ class Auth with ChangeNotifier {
     }
     final extractedUserData =
         json.decode(prefs.getString('userData')) as Map<String, Object>;
-    final expiryDate = DateTime.parse(extractedUserData['expiryDate']);
+//    final expiryDate = DateTime.parse(extractedUserData['expiryDate']);
 
-    if (expiryDate.isBefore(DateTime.now())) {
-      return false;
-    }
+//    if (expiryDate.isBefore(DateTime.now())) {
+//      return false;
+//    }
     _token = extractedUserData['access-token'];
     _client = extractedUserData['client'];
     _uid = extractedUserData['uid'];
-    _expiryDate = expiryDate;
+//    _expiryDate = expiryDate;
     notifyListeners();
 //    _autoLogout();
     return true;
