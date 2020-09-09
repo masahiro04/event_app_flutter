@@ -1,8 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:event_app/providers/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:path/path.dart';
+import 'package:async/async.dart';
 
 import '../models/http_exception.dart';
 import './product.dart';
@@ -38,7 +42,7 @@ class Products with ChangeNotifier {
     final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
 
     return {
-      'Content-Type': 'application/json',
+//      'Content-Type': 'application/json',
       'access-token': extractedUserData['access-token'],
       'client': extractedUserData['client'],
       'uid': extractedUserData['uid']
@@ -84,32 +88,51 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> addProduct(Product product) async {
-    final url = 'http://10.0.2.2:3001/api/events';
+  Future<void> addProduct(Product product, File image) async {
     try {
-      final headers = await getAuthorization();
-      final response = await http.post(
-        url,
-        headers: headers,
-        body: json.encode({
-          'title': product.title,
-          'body': product.description,
-          'imageUrl': 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
-          'price': 10,
-        }),
-      );
-      final returnedProd = json.decode(response.body)['response'];
-      final newProduct = Product(
-        title: returnedProd['title'],
-        description: returnedProd['body'],
-        price: 10,
-        image: '',
-        id: returnedProd['id'],
-        user: User(returnedProd['user']['id'], returnedProd['user']['name'])
-      );
+      var stream = new http.ByteStream(DelegatingStream.typed(image.openRead()));
+      var url = Uri.parse('http://10.0.2.2:3001/api/events');
+      var length = await image.length();
 
-      _items.add(newProduct);
-      notifyListeners();
+      final headers = await getAuthorization();
+      var request = new http.MultipartRequest('POST', url);
+      var multipartFile = new http.MultipartFile('event[image]', stream, length, filename: basename(image.path));
+
+      request.files.add(multipartFile);
+      request.fields.addAll( { 'event[title]': product.title, 'event[body]': product.description,});
+      request.headers.addAll(headers);
+      var response = await request.send();
+      print(response.statusCode);
+      print(response);
+      print(response.request);
+
+      Product newProduct;
+      response.stream.transform(utf8.decoder).listen((value) {
+        final pData = json.decode(value)['response'];
+        newProduct = Product(
+          title: pData['title'],
+          description: pData['body'],
+          price: 10,
+          image: '',
+          id: pData['id'],
+          user: User(pData['user']['id'], pData['user']['name']));
+          print(pData);
+        _items.add(newProduct);
+        notifyListeners();
+      });
+
+//      final newProduct = Product(
+//          title: returnedProd['title'],
+//          description: returnedProd['body'],
+//          price: 10,
+//          image: '',
+//          id: returnedProd['id'],
+//          user: User(returnedProd['user']['id'], returnedProd['user']['name'])
+//      );
+
+
+
+
     } catch (error) {
       print(error);
       throw error;

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +21,8 @@ class _EditProductState extends State<EditProductScreen> {
   final _form = GlobalKey<FormState>();
   var _editedProduct =
       Product(id: null, title: '', price: 0, description: '', image: '');
+
+  File tmpFile;
 
   var _initValues = {
     'title': '',
@@ -96,7 +100,7 @@ class _EditProductState extends State<EditProductScreen> {
     } else {
       try {
         await Provider.of<Products>(context, listen: false)
-            .addProduct(_editedProduct);
+            .addProduct(_editedProduct, null);
       } catch (error) {
         await showDialog(
             context: context,
@@ -126,7 +130,7 @@ class _EditProductState extends State<EditProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Product'),
+        title: Text('イベントの修正'),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.save),
@@ -222,6 +226,24 @@ class _EditProductState extends State<EditProductScreen> {
                             id: _editedProduct.id,);
                       },
                     ),
+                    FlatButton(
+                      child: Text('Okay'),
+                      onPressed: () {
+//                        Navigator.of(ctx).pop();
+                      },
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Container(
+                          width: 100,
+                          height: 100,
+                          child: Text('dadad'),
+
+                        )
+                      ],
+                    ),
+
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: <Widget>[
