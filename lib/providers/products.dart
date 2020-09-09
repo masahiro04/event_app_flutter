@@ -76,7 +76,6 @@ class Products with ChangeNotifier {
           id: extractedData[i]['id'],
           title: extractedData[i]['title'],
           body: extractedData[i]['body'],
-          price: 10,
           user: User(extractedData[i]['user']['id'], extractedData[i]['user']['name']),
           image: extractedData[i]['image'] == null ? 'http://10.0.2.2:3001/sample.png' : 'http://10.0.2.2:3001/${extractedData[i]['image']}',
         ));
@@ -111,7 +110,6 @@ class Products with ChangeNotifier {
         newProduct = Product(
           title: pData['title'],
           body: pData['body'],
-          price: 10,
           image: pData['image'] == null ? 'http://10.0.2.2:3001/sample.png' : 'http://10.0.2.2:3001/${pData['image']}',
           id: pData['id'],
           user: User(pData['user']['id'], pData['user']['name']));
@@ -148,7 +146,6 @@ class Products with ChangeNotifier {
         _items[prodIndex] =Product(
             title: pData['title'],
             body: pData['body'],
-            price: 10,
             image: pData['image'] == null ? 'http://10.0.2.2:3001/sample.png' : 'http://10.0.2.2:3001/${pData['image']}',
             id: pData['id'],
             user: User(pData['user']['id'], pData['user']['name']));

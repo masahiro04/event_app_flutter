@@ -1,9 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-
 import '../providers/product.dart';
 import '../providers/products.dart';
 
@@ -15,22 +13,17 @@ class EditProductScreen extends StatefulWidget {
 }
 
 class _EditProductScreenState extends State<EditProductScreen> {
-  final _priceFocusNode = FocusNode();
   final _descriptionFocusNode = FocusNode();
-  final _imageController = TextEditingController();
-  final _imageFocusNode = FocusNode();
   final _form = GlobalKey<FormState>();
   var _editedProduct = Product(
     id: null,
     title: '',
-    price: 0,
     body: '',
     image: '',
   );
   var _initValues = {
     'title': '',
     'body': '',
-    'price': '',
     'image': '',
   };
   var _isInit = true;
@@ -41,7 +34,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   void initState() {
-//    _imageFocusNode.addListener(_updateImageUrl);
     super.initState();
   }
 
@@ -50,15 +42,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
     if (_isInit) {
       final productId = ModalRoute.of(context).settings.arguments as int;
       if (productId != null) {
-        _editedProduct =
-            Provider.of<Products>(context, listen: false).findById(productId);
+        _editedProduct = Provider.of<Products>(context, listen: false).findById(productId);
         _initValues = {
           'title': _editedProduct.title,
           'body': _editedProduct.body,
-          'price': _editedProduct.price.toString(),
           'image': _editedProduct.image,
         };
-//        _imageController.text = _editedProduct.image;
       }
     }
     _isInit = false;
@@ -67,11 +56,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   void dispose() {
-//    _imageFocusNode.removeListener(_updateImageUrl);
-    _priceFocusNode.dispose();
     _descriptionFocusNode.dispose();
-//    _imageController.dispose();
-//    _imageFocusNode.dispose();
     super.dispose();
   }
 
@@ -102,8 +87,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
         await showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-                title: Text('An error occurred!'),
-                content: Text('Something went wrong.'),
+                title: Text('エラー'),
+                content: Text('サーバー側でエラーが発生しています。お手数ですが、運営までご連絡ください。'),
                 actions: <Widget>[
                   FlatButton(
                     child: Text('Okay'),
@@ -125,7 +110,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget _buildImage() {
     if (_image == null) {
       if (_editedProduct.image == null) {
-        return Text('Enter a URL');
+        return Text('画像を選択してください。');
       } else {
         return Image.network(_editedProduct.image, fit: BoxFit.cover,);
       }
@@ -163,7 +148,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   children: <Widget>[
                     FloatingActionButton(
                       onPressed: getImage,
-                      tooltip: 'Pick Image',
+                      tooltip: '画像を選択',
                       child: Icon(Icons.add_a_photo),
                     ),
                     Row(
@@ -189,52 +174,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     ),
                     TextFormField(
                       initialValue: _initValues['title'],
-                      decoration: InputDecoration(labelText: 'Title'),
+                      decoration: InputDecoration(labelText: 'タイトル'),
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (_) {
-                        FocusScope.of(context).requestFocus(_priceFocusNode);
+                        FocusScope.of(context).requestFocus(_descriptionFocusNode);
                       },
                       validator: (value) {
                         if (value.isEmpty) {
-                          return 'Please provide a value.';
+                          return 'タイトルを入力してください';
                         }
                         return null;
                       },
                       onSaved: (value) {
                         _editedProduct = Product(
                             title: value,
-                            price: _editedProduct.price,
-                            body: _editedProduct.body,
-                            image: _editedProduct.image,
-                            id: _editedProduct.id,);
-                      },
-                    ),
-                    TextFormField(
-                      initialValue: _initValues['price'],
-                      decoration: InputDecoration(labelText: 'Price'),
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.number,
-                      focusNode: _priceFocusNode,
-                      onFieldSubmitted: (_) {
-                        FocusScope.of(context)
-                            .requestFocus(_descriptionFocusNode);
-                      },
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter a price.';
-                        }
-                        if (double.tryParse(value) == null) {
-                          return 'Please enter a valid number.';
-                        }
-                        if (double.parse(value) <= 0) {
-                          return 'Please enter a number greater than zero.';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _editedProduct = Product(
-                            title: _editedProduct.title,
-                            price: double.parse(value),
                             body: _editedProduct.body,
                             image: _editedProduct.image,
                             id: _editedProduct.id,);
@@ -242,23 +195,22 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     ),
                     TextFormField(
                       initialValue: _initValues['body'],
-                      decoration: InputDecoration(labelText: 'Description'),
-                      maxLines: 3,
+                      decoration: InputDecoration(labelText: '内容'),
+                      maxLines: 8,
                       keyboardType: TextInputType.multiline,
                       focusNode: _descriptionFocusNode,
                       validator: (value) {
                         if (value.isEmpty) {
-                          return 'Please enter a description.';
+                          return '内容を入力してください。';
                         }
                         if (value.length < 10) {
-                          return 'Should be at least 10 characters long.';
+                          return '内容は10文字から入力してください。';
                         }
                         return null;
                       },
                       onSaved: (value) {
                         _editedProduct = Product(
                           title: _editedProduct.title,
-                          price: _editedProduct.price,
                           body: value,
                           image: _editedProduct.image,
                           id: _editedProduct.id,
