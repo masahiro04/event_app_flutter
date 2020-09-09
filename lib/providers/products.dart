@@ -75,7 +75,7 @@ class Products with ChangeNotifier {
         loadedProducts.add(Product(
           id: extractedData[i]['id'],
           title: extractedData[i]['title'],
-          description: extractedData[i]['body'],
+          body: extractedData[i]['body'],
           price: 10,
           user: User(extractedData[i]['user']['id'], extractedData[i]['user']['name']),
           image: extractedData[i]['image'] == null ? 'http://10.0.2.2:3001/sample.png' : 'http://10.0.2.2:3001/${extractedData[i]['image']}',
@@ -98,7 +98,7 @@ class Products with ChangeNotifier {
       var multipartFile = new http.MultipartFile('event[image]', stream, length, filename: basename(image.path));
 
       request.files.add(multipartFile);
-      request.fields.addAll( { 'event[title]': product.title, 'event[body]': product.description,});
+      request.fields.addAll( { 'event[title]': product.title, 'event[body]': product.body,});
       request.headers.addAll(headers);
       var response = await request.send();
       print(response.statusCode);
@@ -110,7 +110,7 @@ class Products with ChangeNotifier {
         final pData = json.decode(value)['response'];
         newProduct = Product(
           title: pData['title'],
-          description: pData['body'],
+          body: pData['body'],
           price: 10,
           image: pData['image'] == null ? 'http://10.0.2.2:3001/sample.png' : 'http://10.0.2.2:3001/${pData['image']}',
           id: pData['id'],
@@ -137,7 +137,7 @@ class Products with ChangeNotifier {
       var multipartFile = new http.MultipartFile('event[image]', stream, length, filename: basename(image.path));
 
       request.files.add(multipartFile);
-      request.fields.addAll( { 'event[id]': product.id.toString() ,'event[title]': product.title, 'event[body]': product.description,});
+      request.fields.addAll( { 'event[id]': product.id.toString() ,'event[title]': product.title, 'event[body]': product.body,});
       request.headers.addAll(headers);
       var response = await request.send();
       print(response.statusCode);
@@ -147,7 +147,7 @@ class Products with ChangeNotifier {
         final pData = json.decode(value)['response'];
         _items[prodIndex] =Product(
             title: pData['title'],
-            description: pData['body'],
+            body: pData['body'],
             price: 10,
             image: pData['image'] == null ? 'http://10.0.2.2:3001/sample.png' : 'http://10.0.2.2:3001/${pData['image']}',
             id: pData['id'],

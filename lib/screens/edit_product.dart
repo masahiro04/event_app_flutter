@@ -20,7 +20,7 @@ class _EditProductState extends State<EditProductScreen> {
   final _imageController = TextEditingController();
   final _form = GlobalKey<FormState>();
   var _editedProduct =
-      Product(id: null, title: '', price: 0, description: '', image: '');
+      Product(id: null, title: '', price: 0, body: '', image: '');
 
   File tmpFile;
 
@@ -49,7 +49,7 @@ class _EditProductState extends State<EditProductScreen> {
             Provider.of<Products>(context, listen: false).findById(productId);
         _initValues = {
           'title': _editedProduct.title,
-          'description': _editedProduct.description,
+          'description': _editedProduct.body,
           'price': _editedProduct.price.toString(),
           'image': '',
         };
@@ -165,7 +165,7 @@ class _EditProductState extends State<EditProductScreen> {
                         _editedProduct = Product(
                             title: value,
                             price: _editedProduct.price,
-                            description: _editedProduct.description,
+                            body: _editedProduct.body,
                             image: _editedProduct.image,
                             id: _editedProduct.id,);
                       },
@@ -196,7 +196,7 @@ class _EditProductState extends State<EditProductScreen> {
                         _editedProduct = Product(
                             title: _editedProduct.title,
                             price: double.parse(value),
-                            description: _editedProduct.description,
+                            body: _editedProduct.body,
                             image: _editedProduct.image,
                             id: _editedProduct.id,);
                       },
@@ -221,7 +221,7 @@ class _EditProductState extends State<EditProductScreen> {
                         _editedProduct = Product(
                             title: _editedProduct.title,
                             price: _editedProduct.price,
-                            description: value,
+                            body: value,
                             image: _editedProduct.image,
                             id: _editedProduct.id,);
                       },
@@ -290,7 +290,7 @@ class _EditProductState extends State<EditProductScreen> {
                               _editedProduct = Product(
                                   title: _editedProduct.title,
                                   price: _editedProduct.price,
-                                  description: _editedProduct.description,
+                                  body: _editedProduct.body,
                                   image: value,
                                   id: _editedProduct.id,);
                             },

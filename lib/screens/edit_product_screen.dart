@@ -24,7 +24,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     id: null,
     title: '',
     price: 0,
-    description: '',
+    body: '',
     image: '',
   );
   var _initValues = {
@@ -54,9 +54,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
             Provider.of<Products>(context, listen: false).findById(productId);
         _initValues = {
           'title': _editedProduct.title,
-          'description': _editedProduct.description,
+          'body': _editedProduct.body,
           'price': _editedProduct.price.toString(),
-          // 'image': _editedProduct.image,
           'image': _editedProduct.image,
         };
         _imageController.text = _editedProduct.image;
@@ -195,7 +194,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         _editedProduct = Product(
                             title: value,
                             price: _editedProduct.price,
-                            description: _editedProduct.description,
+                            body: _editedProduct.body,
                             image: _editedProduct.image,
                             id: _editedProduct.id,);
                       },
@@ -226,7 +225,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         _editedProduct = Product(
                             title: _editedProduct.title,
                             price: double.parse(value),
-                            description: _editedProduct.description,
+                            body: _editedProduct.body,
                             image: _editedProduct.image,
                             id: _editedProduct.id,);
                       },
@@ -250,7 +249,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         _editedProduct = Product(
                           title: _editedProduct.title,
                           price: _editedProduct.price,
-                          description: value,
+                          body: value,
                           image: _editedProduct.image,
                           id: _editedProduct.id,
                         );
