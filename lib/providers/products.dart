@@ -79,7 +79,7 @@ class Products with ChangeNotifier {
           description: extractedData[i]['body'],
           price: 10,
           user: User(extractedData[i]['user']['id'], extractedData[i]['user']['name']),
-          image: 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
+          image: extractedData[i]['image'] == null ? 'http://10.0.2.2:3001/sample.png' : 'http://10.0.2.2:3001/${extractedData[i]['image']}',
         ));
       }
       _items = loadedProducts;
@@ -113,26 +113,13 @@ class Products with ChangeNotifier {
           title: pData['title'],
           description: pData['body'],
           price: 10,
-          image: '',
+          image: pData['image'] == null ? 'http://10.0.2.2:3001/sample.png' : 'http://10.0.2.2:3001/${pData['image']}',
           id: pData['id'],
           user: User(pData['user']['id'], pData['user']['name']));
           print(pData);
         _items.add(newProduct);
         notifyListeners();
       });
-
-//      final newProduct = Product(
-//          title: returnedProd['title'],
-//          description: returnedProd['body'],
-//          price: 10,
-//          image: '',
-//          id: returnedProd['id'],
-//          user: User(returnedProd['user']['id'], returnedProd['user']['name'])
-//      );
-
-
-
-
     } catch (error) {
       print(error);
       throw error;

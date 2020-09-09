@@ -57,7 +57,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           'description': _editedProduct.description,
           'price': _editedProduct.price.toString(),
           // 'image': _editedProduct.image,
-          'image': 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
+          'image': _editedProduct.image,
         };
         _imageController.text = _editedProduct.image;
       }
@@ -78,31 +78,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
-    print('----------');
-    print(pickedFile.path);
-    print('----------');
-
     setState(() {
       _image = File(pickedFile.path);
-      print('----------');
-      print(_image);
-      print('----------');
     });
   }
-
-
-//  void _updateImageUrl() {
-//    if (!_imageFocusNode.hasFocus) {
-//      if ((!_imageController.text.startsWith('http') &&
-//              !_imageController.text.startsWith('https')) ||
-//          (!_imageController.text.endsWith('.png') &&
-//              !_imageController.text.endsWith('.jpg') &&
-//              !_imageController.text.endsWith('.jpeg'))) {
-//        return;
-//      }
-//      setState(() {});
-//    }
-//  }
 
   Future<void> _saveForm() async {
     final isValid = _form.currentState.validate();
@@ -137,18 +116,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
               ),
         );
       }
-      // finally {
-      //   setState(() {
-      //     _isLoading = false;
-      //   });
-      //   Navigator.of(context).pop();
-      // }
     }
     setState(() {
       _isLoading = false;
     });
     Navigator.of(context).pop();
-    // Navigator.of(context).pop();
   }
 
   @override
