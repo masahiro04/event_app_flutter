@@ -36,6 +36,35 @@ class Auth with ChangeNotifier {
     return _userId;
   }
 
+  Future<void> validateToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userData')) {
+      return {};
+    }
+    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final url = 'http://10.0.2.2:3001/api/auth/validate_token?access-token=${ extractedUserData['access-token'] }&client=${ extractedUserData['client'] }&uid=${ extractedUserData['uid'] }';
+    final response = await http.get(url);
+    setAuthorizationData(response);
+  }
+
+  Future<void> setAuthorizationData(http.Response response) async {
+    final responseData = json.decode(response.body);
+    final prefs = await SharedPreferences.getInstance();
+    _token = response.headers['access-token'];
+    _uid = response.headers['uid'];
+    _client = response.headers['client'];
+    _userId = responseData['data']['id'];
+    final userData = json.encode(
+      {
+        'access-token': _token,
+        'user_id': _userId,
+        'uid': _uid,
+        'client': _client,
+      },
+    );
+    prefs.setString('userData', userData);
+  }
+
   Future<void> _authenticate(String prefix, Map<String, String> body) async {
     final url = 'http://10.0.2.2:3001/api/auth$prefix';
     try {
@@ -50,30 +79,25 @@ class Auth with ChangeNotifier {
       if (responseData['error'] != null) {
         throw HttpException(responseData['error']['message']);
       }
+
       _token = response.headers['access-token'];
       _uid = response.headers['uid'];
       _client = response.headers['client'];
       _userId = responseData['data']['id'];
-//      _expiryDate = DateTime.now().add(
-//        Duration(
-//          seconds: int.parse(
-//            response.headers['expiry'],
-//          ),
-//        ),
-//      );
-//      _autoLogout();
       notifyListeners();
-      final prefs = await SharedPreferences.getInstance();
-      final userData = json.encode(
-        {
-          'access-token': _token,
-          'user_id': _userId,
-          'uid': _uid,
-          'client': _client,
-//          'expiryDate': _expiryDate.toIso8601String(),
-        },
-      );
-      prefs.setString('userData', userData);
+      setAuthorizationData(response);
+
+//      final prefs = await SharedPreferences.getInstance();
+//      final userData = json.encode(
+//        {
+//          'access-token': _token,
+//          'user_id': _userId,
+//          'uid': _uid,
+//          'client': _client,
+////          'expiryDate': _expiryDate.toIso8601String(),
+//        },
+//      );
+//      prefs.setString('userData', userData);
     } catch (error) {
       throw error;
     }
@@ -112,6 +136,7 @@ class Auth with ChangeNotifier {
     _token = extractedUserData['access-token'];
     _client = extractedUserData['client'];
     _uid = extractedUserData['uid'];
+    _userId = extractedUserData['user_id'];
 //    _expiryDate = expiryDate;
     notifyListeners();
 //    _autoLogout();

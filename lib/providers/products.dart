@@ -19,13 +19,10 @@ class Products with ChangeNotifier {
   }
 
   List<Product> get myItems {
-    print('----------');
-//     if (_showFavoritesOnly) {
-//       return _items.where((prodItem) => prodItem.isFavorite).toList();
-//     }
-
-    print('----------');
-    return [..._items];
+    if (userId == null) {
+      return [];
+    }
+    return _items.where((prodItem) => prodItem.user.id == userId);
   }
 
   Product findById(String id) {
@@ -45,6 +42,16 @@ class Products with ChangeNotifier {
       'client': extractedUserData['client'],
       'uid': extractedUserData['uid']
     };
+  }
+
+  Future<int> getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userData')) {
+      return null;
+    }
+    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+
+    return extractedUserData['user_id'];
   }
 
   Future<void> fetchAndSetProducts() async {
@@ -71,8 +78,7 @@ class Products with ChangeNotifier {
       }
       _items = loadedProducts;
       notifyListeners();
-    } catch (error) {
-      throw (error);
+    } catch (error) {throw (error);
     }
   }
 
