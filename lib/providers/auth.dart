@@ -11,6 +11,7 @@ class Auth with ChangeNotifier {
   String _token;
   DateTime _expiryDate;
   String _uid;
+  int _userId;
   String _client;
   Timer _authTimer;
 
@@ -31,8 +32,8 @@ class Auth with ChangeNotifier {
     return null;
   }
 
-  String get userId {
-    return _uid;
+  int get userId {
+    return _userId;
   }
 
   Future<void> _authenticate(String prefix, Map<String, String> body) async {
@@ -52,6 +53,7 @@ class Auth with ChangeNotifier {
       _token = response.headers['access-token'];
       _uid = response.headers['uid'];
       _client = response.headers['client'];
+      _userId = responseData['data']['id'];
 //      _expiryDate = DateTime.now().add(
 //        Duration(
 //          seconds: int.parse(
@@ -65,6 +67,7 @@ class Auth with ChangeNotifier {
       final userData = json.encode(
         {
           'access-token': _token,
+          'user_id': _userId,
           'uid': _uid,
           'client': _client,
 //          'expiryDate': _expiryDate.toIso8601String(),

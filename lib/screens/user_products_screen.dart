@@ -20,7 +20,7 @@ class UserProductsScreen extends StatelessWidget {
     print('rebuilding...');
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Your Products'),
+        title: const Text('自分の投稿'),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.add),
@@ -44,7 +44,7 @@ class UserProductsScreen extends StatelessWidget {
                       builder: (ctx, productsData, _) => Padding(
                             padding: EdgeInsets.all(8),
                             child: ListView.builder(
-                              itemCount: productsData.items.length,
+                              itemCount: productsData.myItems.length,
                               itemBuilder: (_, i) => Column(
                                     children: [
                                       UserProductItem(

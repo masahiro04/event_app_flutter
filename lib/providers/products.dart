@@ -10,11 +10,21 @@ class Products with ChangeNotifier {
   List<Product> _items = [];
 
   final String authToken;
-  final String userId;
+  final int userId;
 
   Products(this.authToken, this.userId, this._items);
 
   List<Product> get items {
+    return [..._items];
+  }
+
+  List<Product> get myItems {
+    print('----------');
+//     if (_showFavoritesOnly) {
+//       return _items.where((prodItem) => prodItem.isFavorite).toList();
+//     }
+
+    print('----------');
     return [..._items];
   }
 
