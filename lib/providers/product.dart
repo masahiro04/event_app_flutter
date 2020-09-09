@@ -8,7 +8,7 @@ class Product with ChangeNotifier {
   final String title;
   final String description;
   final double price;
-  final String imageUrl;
+  final String image;
   final User user;
 
   Product({
@@ -16,7 +16,7 @@ class Product with ChangeNotifier {
     @required this.title,
     @required this.description,
     this.price = 10,
-    this.imageUrl = 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
+    this.image = 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
     this.user
   });
 }

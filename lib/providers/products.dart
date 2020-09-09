@@ -75,7 +75,7 @@ class Products with ChangeNotifier {
           description: extractedData[i]['body'],
           price: 10,
           user: User(extractedData[i]['user']['id'], extractedData[i]['user']['name']),
-          imageUrl: 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
+          image: 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
         ));
       }
       _items = loadedProducts;
@@ -103,7 +103,7 @@ class Products with ChangeNotifier {
         title: returnedProd['title'],
         description: returnedProd['body'],
         price: 10,
-        imageUrl: '',
+        image: '',
         id: returnedProd['id'],
         user: User(returnedProd['user']['id'], returnedProd['user']['name'])
       );
@@ -126,7 +126,7 @@ class Products with ChangeNotifier {
           body: json.encode({
             'title': newProduct.title,
             'body': newProduct.description,
-            'imageUrl': 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
+            'image': 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
             'price': newProduct.price
           }));
       final returnedProd = json.decode(response.body)['response'];

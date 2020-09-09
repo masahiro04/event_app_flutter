@@ -14,28 +14,28 @@ class EditProductScreen extends StatefulWidget {
 class _EditProductScreenState extends State<EditProductScreen> {
   final _priceFocusNode = FocusNode();
   final _descriptionFocusNode = FocusNode();
-  final _imageUrlController = TextEditingController();
-  final _imageUrlFocusNode = FocusNode();
+  final _imageController = TextEditingController();
+  final _imageFocusNode = FocusNode();
   final _form = GlobalKey<FormState>();
   var _editedProduct = Product(
     id: null,
     title: '',
     price: 0,
     description: '',
-    imageUrl: '',
+    image: '',
   );
   var _initValues = {
     'title': '',
     'description': '',
     'price': '',
-    'imageUrl': '',
+    'image': '',
   };
   var _isInit = true;
   var _isLoading = false;
 
   @override
   void initState() {
-    _imageUrlFocusNode.addListener(_updateImageUrl);
+    _imageFocusNode.addListener(_updateImageUrl);
     super.initState();
   }
 
@@ -50,10 +50,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
           'title': _editedProduct.title,
           'description': _editedProduct.description,
           'price': _editedProduct.price.toString(),
-          // 'imageUrl': _editedProduct.imageUrl,
-          'imageUrl': 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
+          // 'image': _editedProduct.image,
+          'image': 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
         };
-        _imageUrlController.text = _editedProduct.imageUrl;
+        _imageController.text = _editedProduct.image;
       }
     }
     _isInit = false;
@@ -62,21 +62,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   void dispose() {
-    _imageUrlFocusNode.removeListener(_updateImageUrl);
+    _imageFocusNode.removeListener(_updateImageUrl);
     _priceFocusNode.dispose();
     _descriptionFocusNode.dispose();
-    _imageUrlController.dispose();
-    _imageUrlFocusNode.dispose();
+    _imageController.dispose();
+    _imageFocusNode.dispose();
     super.dispose();
   }
 
   void _updateImageUrl() {
-    if (!_imageUrlFocusNode.hasFocus) {
-      if ((!_imageUrlController.text.startsWith('http') &&
-              !_imageUrlController.text.startsWith('https')) ||
-          (!_imageUrlController.text.endsWith('.png') &&
-              !_imageUrlController.text.endsWith('.jpg') &&
-              !_imageUrlController.text.endsWith('.jpeg'))) {
+    if (!_imageFocusNode.hasFocus) {
+      if ((!_imageController.text.startsWith('http') &&
+              !_imageController.text.startsWith('https')) ||
+          (!_imageController.text.endsWith('.png') &&
+              !_imageController.text.endsWith('.jpg') &&
+              !_imageController.text.endsWith('.jpeg'))) {
         return;
       }
       setState(() {});
@@ -170,7 +170,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             title: value,
                             price: _editedProduct.price,
                             description: _editedProduct.description,
-                            imageUrl: _editedProduct.imageUrl,
+                            image: _editedProduct.image,
                             id: _editedProduct.id,);
                       },
                     ),
@@ -201,7 +201,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             title: _editedProduct.title,
                             price: double.parse(value),
                             description: _editedProduct.description,
-                            imageUrl: _editedProduct.imageUrl,
+                            image: _editedProduct.image,
                             id: _editedProduct.id,);
                       },
                     ),
@@ -225,7 +225,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           title: _editedProduct.title,
                           price: _editedProduct.price,
                           description: value,
-                          imageUrl: _editedProduct.imageUrl,
+                          image: _editedProduct.image,
                           id: _editedProduct.id,
                         );
                       },
@@ -246,11 +246,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               color: Colors.grey,
                             ),
                           ),
-                          child: _imageUrlController.text.isEmpty
+                          child: _imageController.text.isEmpty
                               ? Text('Enter a URL')
                               : FittedBox(
                                   child: Image.network(
-                                    _imageUrlController.text,
+                                    _imageController.text,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -260,8 +260,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             decoration: InputDecoration(labelText: 'Image URL'),
                             keyboardType: TextInputType.url,
                             textInputAction: TextInputAction.done,
-                            controller: _imageUrlController,
-                            focusNode: _imageUrlFocusNode,
+                            controller: _imageController,
+                            focusNode: _imageFocusNode,
                             onFieldSubmitted: (_) {
                               _saveForm();
                             },
@@ -285,7 +285,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                 title: _editedProduct.title,
                                 price: _editedProduct.price,
                                 description: _editedProduct.description,
-                                imageUrl: value,
+                                image: value,
                                 id: _editedProduct.id,
                               );
                             },
