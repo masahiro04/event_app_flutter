@@ -36,17 +36,6 @@ class Auth with ChangeNotifier {
     return _userId;
   }
 
-  Future<void> validateToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('userData')) {
-      return {};
-    }
-    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
-    final url = 'http://10.0.2.2:3001/api/auth/validate_token?access-token=${ extractedUserData['access-token'] }&client=${ extractedUserData['client'] }&uid=${ extractedUserData['uid'] }';
-    final response = await http.get(url);
-    setAuthorizationData(response);
-  }
-
   Future<void> setAuthorizationData(http.Response response) async {
     final responseData = json.decode(response.body);
     final prefs = await SharedPreferences.getInstance();

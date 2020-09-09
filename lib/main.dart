@@ -15,9 +15,6 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // 初回レンダリング時に強制的にトークンをセット
-    // リクエスト回数を減らすことは考慮していない
-    Auth().validateToken();
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
