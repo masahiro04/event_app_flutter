@@ -7,12 +7,14 @@ class Product with ChangeNotifier {
   final String body;
   final String image;
   final User user;
+  final DateTime createdAt;
 
   Product({
     @required this.id,
     @required this.title,
     @required this.body,
     this.image,
-    this.user
+    @required this.user,
+    @required this.createdAt
   });
 }

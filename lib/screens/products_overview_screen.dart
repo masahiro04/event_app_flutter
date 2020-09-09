@@ -42,7 +42,6 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final products = Provider.of<Products>(context).items;
     return Scaffold(
       appBar: AppBar(
         title: Text('イベント一覧'),

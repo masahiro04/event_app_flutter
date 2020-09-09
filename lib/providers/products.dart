@@ -78,6 +78,7 @@ class Products with ChangeNotifier {
           body: extractedData[i]['body'],
           user: User(extractedData[i]['user']['id'], extractedData[i]['user']['name']),
           image: extractedData[i]['image'] == null ? 'http://10.0.2.2:3001/sample.png' : 'http://10.0.2.2:3001/${extractedData[i]['image']}',
+          createdAt: DateTime.parse(extractedData[i]['created_at']),
         ));
       }
       _items = loadedProducts;
@@ -112,7 +113,9 @@ class Products with ChangeNotifier {
           body: pData['body'],
           image: pData['image'] == null ? 'http://10.0.2.2:3001/sample.png' : 'http://10.0.2.2:3001/${pData['image']}',
           id: pData['id'],
-          user: User(pData['user']['id'], pData['user']['name']));
+          user: User(pData['user']['id'], pData['user']['name']),
+          createdAt: pData['created_at'],
+        );
           print(pData);
         _items.add(newProduct);
         notifyListeners();
@@ -148,7 +151,8 @@ class Products with ChangeNotifier {
             body: pData['body'],
             image: pData['image'] == null ? 'http://10.0.2.2:3001/sample.png' : 'http://10.0.2.2:3001/${pData['image']}',
             id: pData['id'],
-            user: User(pData['user']['id'], pData['user']['name']));
+            user: User(pData['user']['id'], pData['user']['name']),
+            createdAt: DateTime.parse(pData['created_at']),);
         notifyListeners();
       });
     } else {
@@ -167,7 +171,7 @@ class Products with ChangeNotifier {
     if (response.statusCode >= 400) {
       _items.insert(existingProductIndex, existingProduct);
       notifyListeners();
-      throw HttpException('Could not delete product.');
+      throw HttpException('削除に失敗しました');
     }
     existingProduct = null;
   }

@@ -22,7 +22,7 @@ class ProductItem extends StatelessWidget {
               title: Text(product.title,
                   style: TextStyle(fontWeight: FontWeight.w500)),
               subtitle: Text(
-                DateFormat('yyyy/MM/dd').format(new DateTime.now()),
+                DateFormat('yyyy/MM/dd').format(product.createdAt),
                 style: TextStyle(color: Colors.grey),
               ),
               leading: Image.network(
