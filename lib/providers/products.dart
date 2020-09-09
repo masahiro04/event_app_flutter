@@ -23,10 +23,10 @@ class Products with ChangeNotifier {
     if (userId == null) {
       return [];
     }
-    return [..._items.where((prodItem) => prodItem.user.id == userId)];
+    return _items.where((prodItem) => prodItem.user.id == userId).toList();
   }
 
-  Product findById(String id) {
+  Product findById(int id) {
     return _items.firstWhere((prod) => prod.id == id);
   }
 
@@ -70,7 +70,7 @@ class Products with ChangeNotifier {
       final List<Product> loadedProducts = [];
       for (int i = 0; i < extractedData.length; i++) {
         loadedProducts.add(Product(
-          id: extractedData[i]['id'].toString(),
+          id: extractedData[i]['id'],
           title: extractedData[i]['title'],
           description: extractedData[i]['body'],
           price: 10,
@@ -98,13 +98,16 @@ class Products with ChangeNotifier {
           'price': 10,
         }),
       );
+      final returnedProd = json.decode(response.body)['response'];
       final newProduct = Product(
-        title: product.title,
-        description: product.description,
-        price: product.price,
-        imageUrl: product.imageUrl,
-        id: json.decode(response.body)['name'],
+        title: returnedProd['title'],
+        description: returnedProd['body'],
+        price: 10,
+        imageUrl: '',
+        id: returnedProd['id'],
+        user: User(returnedProd['user']['id'], returnedProd['user']['name'])
       );
+
       _items.add(newProduct);
       notifyListeners();
     } catch (error) {
@@ -113,12 +116,12 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> updateProduct(String id, Product newProduct) async {
+  Future<void> updateProduct(int id, Product newProduct) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
       final headers = await getAuthorization();
       final url = 'http://10.0.2.2:3001/api/events/$id';
-      await http.patch(url,
+      final response = await http.patch(url,
           headers: headers,
           body: json.encode({
             'title': newProduct.title,
@@ -126,14 +129,18 @@ class Products with ChangeNotifier {
             'imageUrl': 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
             'price': newProduct.price
           }));
-      _items[prodIndex] = newProduct;
+      final returnedProd = json.decode(response.body)['response'];
+      _items[prodIndex] =
+          Product(id: returnedProd['id'],
+              title: returnedProd['title'], description: returnedProd['body'], price: 10,
+              user: User(returnedProd['user']['id'], returnedProd['user']['name']));
       notifyListeners();
     } else {
       print('...');
     }
   }
 
-  Future<void> deleteProduct(String id) async {
+  Future<void> deleteProduct(int id) async {
     final headers = await getAuthorization();
     final url ='http://10.0.2.2:3001/api/events/$id';
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);

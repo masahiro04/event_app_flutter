@@ -42,7 +42,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   void didChangeDependencies() {
     if (_isInit) {
-      final productId = ModalRoute.of(context).settings.arguments as String;
+      final productId = ModalRoute.of(context).settings.arguments as int;
       if (productId != null) {
         _editedProduct =
             Provider.of<Products>(context, listen: false).findById(productId);
@@ -51,7 +51,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           'description': _editedProduct.description,
           'price': _editedProduct.price.toString(),
           // 'imageUrl': _editedProduct.imageUrl,
-          'imageUrl': '',
+          'imageUrl': 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
         };
         _imageUrlController.text = _editedProduct.imageUrl;
       }
