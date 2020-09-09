@@ -42,7 +42,6 @@ class Products with ChangeNotifier {
     final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
 
     return {
-//      'Content-Type': 'application/json',
       'access-token': extractedUserData['access-token'],
       'client': extractedUserData['client'],
       'uid': extractedUserData['uid']
@@ -126,25 +125,35 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> updateProduct(int id, Product newProduct) async {
+  Future<void> updateProduct(int id, Product product, image) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
+      var stream = new http.ByteStream(DelegatingStream.typed(image.openRead()));
+      var url = Uri.parse('http://10.0.2.2:3001/api/events/$id');
+      var length = await image.length();
+
       final headers = await getAuthorization();
-      final url = 'http://10.0.2.2:3001/api/events/$id';
-      final response = await http.patch(url,
-          headers: headers,
-          body: json.encode({
-            'title': newProduct.title,
-            'body': newProduct.description,
-            'image': 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
-            'price': newProduct.price
-          }));
-      final returnedProd = json.decode(response.body)['response'];
-      _items[prodIndex] =
-          Product(id: returnedProd['id'],
-              title: returnedProd['title'], description: returnedProd['body'], price: 10,
-              user: User(returnedProd['user']['id'], returnedProd['user']['name']));
-      notifyListeners();
+      var request = new http.MultipartRequest('PUT', url);
+      var multipartFile = new http.MultipartFile('event[image]', stream, length, filename: basename(image.path));
+
+      request.files.add(multipartFile);
+      request.fields.addAll( { 'event[id]': product.id.toString() ,'event[title]': product.title, 'event[body]': product.description,});
+      request.headers.addAll(headers);
+      var response = await request.send();
+      print(response.statusCode);
+      print(response);
+      print(response.request);
+      response.stream.transform(utf8.decoder).listen((value) {
+        final pData = json.decode(value)['response'];
+        _items[prodIndex] =Product(
+            title: pData['title'],
+            description: pData['body'],
+            price: 10,
+            image: pData['image'] == null ? 'http://10.0.2.2:3001/sample.png' : 'http://10.0.2.2:3001/${pData['image']}',
+            id: pData['id'],
+            user: User(pData['user']['id'], pData['user']['name']));
+        notifyListeners();
+      });
     } else {
       print('...');
     }
