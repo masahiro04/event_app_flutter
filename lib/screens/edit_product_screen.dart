@@ -29,7 +29,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   );
   var _initValues = {
     'title': '',
-    'description': '',
+    'body': '',
     'price': '',
     'image': '',
   };
@@ -58,7 +58,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           'price': _editedProduct.price.toString(),
           'image': _editedProduct.image,
         };
-        _imageController.text = _editedProduct.image;
+//        _imageController.text = _editedProduct.image;
       }
     }
     _isInit = false;
@@ -122,6 +122,23 @@ class _EditProductScreenState extends State<EditProductScreen> {
     Navigator.of(context).pop();
   }
 
+  Widget _buildImage() {
+    if (_image == null) {
+      if (_editedProduct.image == null) {
+        return Text('Enter a URL');
+      } else {
+        return Image.network(_editedProduct.image, fit: BoxFit.cover,);
+      }
+    } else {
+      return FittedBox(
+        child: Image.file(
+          _image,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -166,14 +183,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             ),
                           ),
                           // ネットワーきのimageの場合も先瀬尾
-                          child: _image == null
-                              ? Text('Enter a URL')
-                              : FittedBox(
-                            child: Image.file(
-                              _image,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+                          child: _buildImage()
                         ),
                       ],
                     ),
@@ -231,7 +241,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       },
                     ),
                     TextFormField(
-                      initialValue: _initValues['description'],
+                      initialValue: _initValues['body'],
                       decoration: InputDecoration(labelText: 'Description'),
                       maxLines: 3,
                       keyboardType: TextInputType.multiline,
