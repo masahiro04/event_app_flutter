@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:event_app/providers/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,7 +23,7 @@ class Products with ChangeNotifier {
     if (userId == null) {
       return [];
     }
-    return _items.where((prodItem) => prodItem.user.id == userId);
+    return [..._items.where((prodItem) => prodItem.user.id == userId)];
   }
 
   Product findById(String id) {
@@ -73,6 +74,7 @@ class Products with ChangeNotifier {
           title: extractedData[i]['title'],
           description: extractedData[i]['body'],
           price: 10,
+          user: User(extractedData[i]['user']['id'], extractedData[i]['user']['name']),
           imageUrl: 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
         ));
       }
