@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:event_app/providers/config.dart';
 import 'package:event_app/providers/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -59,9 +60,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    var url = 'http://10.0.2.2:3001/api/events';
+    var url = '$apiPath/events';
     var headers = await getAuthorization();
-
     try {
       final response = await http.get(url, headers: headers);
       final extractedData = json.decode(response.body)['response'] as List;
@@ -77,20 +77,21 @@ class Products with ChangeNotifier {
           title: extractedData[i]['title'],
           body: extractedData[i]['body'],
           user: User(extractedData[i]['user']['id'], extractedData[i]['user']['name']),
-          image: extractedData[i]['image'] == null ? 'http://10.0.2.2:3001/sample.png' : 'http://10.0.2.2:3001/${extractedData[i]['image']}',
+          image: extractedData[i]['image'] == null ? '$basePath/sample.png' : '$basePath/${extractedData[i]['image']}',
           createdAt: DateTime.parse(extractedData[i]['created_at']),
         ));
       }
       _items = loadedProducts;
       notifyListeners();
-    } catch (error) {throw (error);
+    } catch (error) {
+      print(error);
     }
   }
 
   Future<void> addProduct(Product product, File image) async {
     try {
       var stream = new http.ByteStream(DelegatingStream.typed(image.openRead()));
-      var url = Uri.parse('http://10.0.2.2:3001/api/events');
+      var url = Uri.parse('$apiPath/events');
       var length = await image.length();
 
       final headers = await getAuthorization();
@@ -98,7 +99,7 @@ class Products with ChangeNotifier {
       var multipartFile = new http.MultipartFile('event[image]', stream, length, filename: basename(image.path));
 
       request.files.add(multipartFile);
-      request.fields.addAll( { 'event[title]': product.title, 'event[body]': product.body,});
+      request.fields.addAll({'event[title]': product.title, 'event[body]': product.body,});
       request.headers.addAll(headers);
       var response = await request.send();
       print(response.statusCode);
@@ -111,7 +112,7 @@ class Products with ChangeNotifier {
         newProduct = Product(
           title: pData['title'],
           body: pData['body'],
-          image: pData['image'] == null ? 'http://10.0.2.2:3001/sample.png' : 'http://10.0.2.2:3001/${pData['image']}',
+          image: pData['image'] == null ? '$basePath/sample.png' : '$basePath/${pData['image']}',
           id: pData['id'],
           user: User(pData['user']['id'], pData['user']['name']),
           createdAt: pData['created_at'],
@@ -130,7 +131,7 @@ class Products with ChangeNotifier {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
       var stream = new http.ByteStream(DelegatingStream.typed(image.openRead()));
-      var url = Uri.parse('http://10.0.2.2:3001/api/events/$id');
+      var url = Uri.parse('$apiPath/events/$id');
       var length = await image.length();
 
       final headers = await getAuthorization();
@@ -138,7 +139,7 @@ class Products with ChangeNotifier {
       var multipartFile = new http.MultipartFile('event[image]', stream, length, filename: basename(image.path));
 
       request.files.add(multipartFile);
-      request.fields.addAll( { 'event[id]': product.id.toString() ,'event[title]': product.title, 'event[body]': product.body,});
+      request.fields.addAll({'event[id]': product.id.toString() ,'event[title]': product.title, 'event[body]': product.body,});
       request.headers.addAll(headers);
       var response = await request.send();
       print(response.statusCode);
@@ -149,7 +150,7 @@ class Products with ChangeNotifier {
         _items[prodIndex] =Product(
             title: pData['title'],
             body: pData['body'],
-            image: pData['image'] == null ? 'http://10.0.2.2:3001/sample.png' : 'http://10.0.2.2:3001/${pData['image']}',
+            image: pData['image'] == null ? '$basePath/sample.png' : '$basePath/${pData['image']}',
             id: pData['id'],
             user: User(pData['user']['id'], pData['user']['name']),
             createdAt: DateTime.parse(pData['created_at']),);
@@ -162,7 +163,7 @@ class Products with ChangeNotifier {
 
   Future<void> deleteProduct(int id) async {
     final headers = await getAuthorization();
-    final url ='http://10.0.2.2:3001/api/events/$id';
+    final url ='$apiPath/events/$id';
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     var existingProduct = _items[existingProductIndex];
     _items.removeAt(existingProductIndex);
